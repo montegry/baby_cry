@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Редактировать сессию</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        function addInterval() {
+            const container = document.getElementById("intervals");
+            const div = document.createElement("div");
+            div.className = "row mb-2";
+            div.innerHTML = `
+                <div class="col">
+                    <input type="time" name="interval_start" class="form-control" required>
+                </div>
+                <div class="col">
+                    <input type="time" name="interval_end" class="form-control" required>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</head>
+<body class="container mt-5">
+    <h2>Редактирование сессии от {{ session[2] }} ({{ session[3] }} - {{ session[4] or '...' }})</h2>
+    <p>Город: <strong>{{ session[1] }}</strong></p>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="end_time" class="form-label">Время окончания сессии</label>
+            <input type="time" class="form-control" id="end_time" name="end_time" value="{{ session[4] }}">
+        </div>
+
+        <h5>Добавить интервалы</h5>
+        <div id="intervals"></div>
+        <button type="button" class="btn btn-secondary mb-3" onclick="addInterval()">Добавить интервал</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+
+    <h4 class="mt-5">Существующие интервалы</h4>
+    <ul class="list-group">
+        {% for i in intervals %}
+        <li class="list-group-item">{{ i[0] }} - {{ i[1] }}</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('stats') }}" class="btn btn-link mt-4">← Назад к статистике</a>
+</body>
+</html>
