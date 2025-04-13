@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Запись крика</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+        function addInterval() {
+            const container = document.getElementById("intervals");
+            const div = document.createElement("div");
+            div.className = "row mb-2";
+            div.innerHTML = `
+                <div class="col">
+                    <input type="time" name="interval_start" class="form-control" required>
+                </div>
+                <div class="col">
+                    <input type="time" name="interval_end" class="form-control" required>
+                </div>
+            `;
+            container.appendChild(div);
+        }
+    </script>
+</head>
+<body class="container mt-5">
+    <h2>Новая сессия крика</h2>
+    <form method="POST" action="/submit">
+        <div class="mb-3">
+            <label for="city" class="form-label">Город</label>
+            <input type="text" class="form-control" id="city" name="city" required>
+        </div>
+        <div class="mb-3">
+            <label for="date" class="form-label">Дата</label>
+            <input type="date" class="form-control" id="date" name="date" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Время начала сессии</label>
+            <input type="time" class="form-control" name="start_time" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Время окончания сессии</label>
+            <input type="time" class="form-control" name="end_time" required>
+        </div>
+        <h5>Интервалы крика</h5>
+        <div id="intervals"></div>
+        <button type="button" class="btn btn-secondary mb-3" onclick="addInterval()">Добавить интервал</button>
+        <br>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </form>
+</body>
+</html>
