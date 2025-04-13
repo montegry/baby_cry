@@ -44,7 +44,7 @@ def submit():
     city = request.form['city']
     date = request.form['date']
     start_time = request.form['start_time']
-    end_time = request.form['end_time']
+    end_time = request.form.get('end_time')  # Может быть пустым
 
     weather = get_weather_data(city)
     solar = get_solar_activity()
@@ -72,7 +72,33 @@ def submit():
 
         conn.commit()
 
-    return redirect(url_for('stats'))
+    return redirect(url_for('edit_session', session_id=session_id))
+
+@app.route("/edit/<int:session_id>", methods=["GET", "POST"])
+def edit_session(session_id):
+    with sqlite3.connect(DB_PATH) as conn:
+        c = conn.cursor()
+        if request.method == "POST":
+            end_time = request.form['end_time']
+            c.execute('UPDATE sessions SET end_time = ? WHERE id = ?', (end_time, session_id))
+
+            interval_starts = request.form.getlist('interval_start')
+            interval_ends = request.form.getlist('interval_end')
+            for istart, iend in zip(interval_starts, interval_ends):
+                if istart and iend:
+                    c.execute('''
+                        INSERT INTO intervals (session_id, interval_start, interval_end)
+                        VALUES (?, ?, ?)
+                    ''', (session_id, istart, iend))
+            conn.commit()
+            return redirect(url_for('stats'))
+
+        c.execute('SELECT * FROM sessions WHERE id = ?', (session_id,))
+        session = c.fetchone()
+        c.execute('SELECT interval_start, interval_end FROM intervals WHERE session_id = ?', (session_id,))
+        intervals = c.fetchall()
+
+    return render_template("edit.html", session=session, intervals=intervals)
 
 @app.route("/stats")
 def stats():
